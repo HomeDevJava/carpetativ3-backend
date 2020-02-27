@@ -5,9 +5,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.stream.Collectors;
 import javax.validation.Valid;
-
-import org.carpetati.spring.backend.entity.ItemReparacion;
-import org.carpetati.spring.backend.entity.Reparacion;
+import org.carpetati.spring.backend.entity.Movactivo;
 import org.carpetati.spring.backend.entity.services.IGenericService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.dao.DataAccessException;
@@ -27,40 +25,37 @@ import org.springframework.web.bind.annotation.RestController;
 @CrossOrigin(origins = {"http://localhost:8080", "http://localhost:4200"})
 @RestController
 @RequestMapping(path = "/api")
-public class ReparacionRestController implements IEndPoints<Reparacion> {
+public class MovactivoRestController implements IEndPoints<Movactivo> {
 	
-	@Autowired private IGenericService<Reparacion> reparacionService;
-	@Autowired private IGenericService<ItemReparacion> itemReparacionService;
+	@Autowired private IGenericService<Movactivo> movactivoService;
 
-	@GetMapping("/reparacion")
-	public List<Reparacion> index() {		
-		return reparacionService.findAll();
+	@GetMapping("/movactivo")
+	public List<Movactivo> index() {		
+		return movactivoService.findAll();
 	}
 
-	@GetMapping("/reparacion/{id}")
-	public ResponseEntity<?> getOne(@PathVariable Long id) {
-		Reparacion reparacion= null;
+	@GetMapping("/movactivo/{id}")
+	public ResponseEntity<?> getOne(@PathVariable Long id) {		
+		Movactivo movactivo = null;
 		Map<String, Object> response = new HashMap<>();
 		try {
-			reparacion = reparacionService.findById(id);
-			if (reparacion == null) {
-				response.put("msg", "el registro " + id + " no existe en la Base de Datos");
+			movactivo = movactivoService.findById(id);
+			if (movactivo == null) {
+				response.put("msg", "El registro "+id+" no existe en la BD");
 				return new ResponseEntity<>(response, HttpStatus.NOT_FOUND);
 			} else {
-				return new ResponseEntity<>(reparacion, HttpStatus.OK);
+				return new ResponseEntity<>(movactivo, HttpStatus.OK);
 			}
-
 		} catch (DataAccessException e) {
-			response.put("msg", "Error al realizar la consulta de la BD");
-			response.put("error", e.getMostSpecificCause().getMessage());
+			response.put("msg", "Error al realizar la consulta en la BD");
+			response.put("eror", e.getMostSpecificCause().getMessage());
 			return new ResponseEntity<>(response, HttpStatus.INTERNAL_SERVER_ERROR);
 		}
 	}
 
-	@PostMapping("/reparacion")
-	public ResponseEntity<?> insert(@Valid @RequestBody Reparacion t, BindingResult result) {
-		
-		Reparacion reparacion = null;
+	@PostMapping("/movactivo")
+	public ResponseEntity<?> insert(@Valid @RequestBody Movactivo t, BindingResult result) {
+		Movactivo movactivo = null;
 		Map<String, Object> response = new HashMap<>();
 		
 		if(result.hasErrors()) {
@@ -74,11 +69,11 @@ public class ReparacionRestController implements IEndPoints<Reparacion> {
 		}
 		
 		try {
-			reparacion = reparacionService.save(t);
-			response.put("msg", "El registro Reparacion se ha creado con éxito con el ID: "+ reparacion.getId());
-			response.put("reparacion", reparacion);
+			movactivo = movactivoService.save(t);
+			response.put("msg", "El registro Movactivo se ha creado con éxito con el ID: "+ movactivo.getId());
+			response.put("reparacion", movactivo);
 			return new ResponseEntity<>(response, HttpStatus.CREATED);
-		} catch ( DataAccessException e) {			
+		} catch (DataAccessException e) {
 			response.put("msg", "Error al realizar el insert en la BD");
 			response.put("error", e.getMessage().concat(e.getMostSpecificCause().getMessage()));
 			return new ResponseEntity<>(response, HttpStatus.INTERNAL_SERVER_ERROR);
@@ -86,61 +81,45 @@ public class ReparacionRestController implements IEndPoints<Reparacion> {
 		
 	}
 
-	@PutMapping("/reparacion/{id}")
-	public ResponseEntity<?> update(@RequestBody Reparacion t, @PathVariable Long id) {
-		
-		Reparacion reparacionActual = reparacionService.findById(id);
-		Reparacion reparacionUpdated = null;
+	@PutMapping("/movactivo/{id}")
+	public ResponseEntity<?> update(@RequestBody Movactivo t, @PathVariable Long id) {
+		Movactivo movactivoActual = movactivoService.findById(id);
+		Movactivo movactivoUpdated = null;
 		Map<String, Object> response = new HashMap<String, Object>();
-
+		
 		try {
-			if (reparacionActual == null) {
+			if (movactivoActual == null) {
 				response.put("msg", "el registro con ID:" + id.toString() + "no existe en la Base de Datos");
 				return new ResponseEntity<>(response, HttpStatus.NOT_FOUND);
 			} else {
-				// ReparacionActual.ifPresent(e -> e.setNombre(entidad.getNombre()));
-				t.setId(reparacionActual.getId());
-				reparacionUpdated = reparacionService.save(t);
-				response.put("msg", "se ha actualizado el registro con ID: "+reparacionUpdated.getId());
-				response.put("reparacion", reparacionUpdated);
+				t.setId(movactivoActual.getId());
+				movactivoUpdated = movactivoService.save(t);
+				response.put("msg", "se ha actualizado el registro con ID: "+movactivoUpdated.getId());
+				response.put("reparacion", movactivoUpdated);
 				return new ResponseEntity<>(response, HttpStatus.CREATED);
 			}
-
 		} catch (DataAccessException e) {
 			response.put("msg", "Error al realizar el update en la BD");
 			response.put("error", e.getMostSpecificCause().getMessage());
 			return new ResponseEntity<>(response, HttpStatus.INTERNAL_SERVER_ERROR);
 		}
 		
+		
+		
 	}
 
-	@DeleteMapping("/reparacion/{id}")
+	@DeleteMapping("/movactivo/{id}")
 	public ResponseEntity<?> delete(@PathVariable Long id) {
 		Map<String, Object> response = new HashMap<String, Object>();
-
 		try {
-			reparacionService.delete(id);
+			movactivoService.delete(id);
 			response.put("msg", "se ha eliminado el registro: ");
 			return new ResponseEntity<>(response, HttpStatus.OK);
-
 		} catch (DataAccessException e) {
-			response.put("msg", "Error al eliminar Registro Reparacion en la BD");
+			response.put("msg", "Error al eliminar Registro Movactivo en la BD");
 			response.put("error", e.getMostSpecificCause().getMessage());
 			return new ResponseEntity<>(response, HttpStatus.INTERNAL_SERVER_ERROR);
 		}
 	}
 
-	@DeleteMapping("/reparacion/item/{id}")
-	public ResponseEntity<?> deleteItem(@PathVariable Long id){
-		Map<String, Object> response = new HashMap<String, Object>();
-		try {
-			itemReparacionService.delete(id);
-			response.put("msg", "Se ha eliminado el Item del registro Reparacion ");
-			return new ResponseEntity<>(response, HttpStatus.OK);
-		} catch (DataAccessException e) {
-			response.put("msg", "Error al eliminar ItemReparacion en la BD");
-			response.put("error", e.getMostSpecificCause().getMessage());
-			return new ResponseEntity<>(response, HttpStatus.INTERNAL_SERVER_ERROR);
-		}
-	}
 }

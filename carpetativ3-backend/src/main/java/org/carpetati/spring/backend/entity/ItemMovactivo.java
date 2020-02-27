@@ -10,6 +10,7 @@ import javax.persistence.JoinColumn;
 import javax.persistence.ManyToOne;
 import javax.persistence.Table;
 
+import com.fasterxml.jackson.annotation.JsonBackReference;
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 
 import lombok.Getter;
@@ -30,6 +31,7 @@ public class ItemMovactivo implements Serializable {
 	@ManyToOne(fetch = FetchType.LAZY)
 	@JoinColumn(name="movactivos_id")
 	@JsonIgnoreProperties({"hibernateLazyInitializer","handler"})
+	@JsonBackReference
 	private Movactivo movactivo;
 	
 	@ManyToOne(fetch = FetchType.LAZY)
